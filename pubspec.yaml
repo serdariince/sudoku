@@ -40,7 +40,7 @@ splash_screen_view:
   #background_image_dark: "assets/dark-background.png"
   image_dark: assets/icon/logo.png
 
-
+ 
   android: true
   ios: false
   web: false
