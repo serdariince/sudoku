@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:sudoku/dil.dart';
+import 'package:sudoku/sudoku_sayfasi.dart';
 
 class GirisSayfasi extends StatefulWidget {
   const GirisSayfasi({Key? key}) : super(key: key);
@@ -11,7 +12,9 @@ class GirisSayfasi extends StatefulWidget {
 }
 
 class _GirisSayfasiState extends State<GirisSayfasi> {
+  late Box _sudokuKutu;
   Future<Box> _kutuAc() async {
+   _sudokuKutu= await Hive.openBox('sudoku');
     return await Hive.openBox('tamamlanan_sudokular');
   }
 
@@ -23,7 +26,7 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
         title: Text(dil['giris_title']),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.history_edu),
+            icon: Icon(Icons.star_border_purple500_outlined),
             onPressed: () {
               Box kutu = Hive.box('ayarlar');
               kutu.put(
@@ -32,6 +35,25 @@ class _GirisSayfasiState extends State<GirisSayfasi> {
               );
             },
           ),
+          PopupMenuButton(
+            icon: Icon(Icons.add),
+            onSelected: (deger){
+              if (_sudokuKutu.isOpen) _sudokuKutu.put('seviye', deger);
+              Navigator.push(context, MaterialPageRoute(builder: (_)=>SudokuSayfasi()));
+            },
+            itemBuilder: (context)=><PopupMenuEntry>[
+              PopupMenuItem(
+                  value: dil["seviye_sec"],
+                  child: Text( dil["seviye_sec"]),
+                  textStyle: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyText1!.color),
+                  enabled: false,
+                  ),
+              for(String key in sudokuSeviyeleri.keys)
+                PopupMenuItem(
+                  value:key,
+                  child: Text( key),
+                  )
+          ])
         ],
       ),
       body: FutureBuilder<Box>(
