@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:sudoku/dil.dart';
+import 'package:sudoku/sudokuskor.dart';
 
 class SudokuSayfasi extends StatefulWidget {
   const SudokuSayfasi({Key? key}) : super(key: key);
@@ -23,9 +26,37 @@ class _SudokuSayfasiState extends State<SudokuSayfasi> {
       List.generate(9, (i) => List.generate(9, (j) => j + 1));
   final Box _sudokuKutu = Hive.box('sudoku');
   List _sudoku = [];
+  late String _sudokuString;
   void _sudokuOlustur() {
     int gizlenecekSayisi = sudokuSeviyeleri[
         _sudokuKutu.get('seviye', defaultValue: dil["seviye2"])];
+    _sudokuString = sudokuSukor[Random().nextInt(sudokuSukor.length)];
+    _sudoku = List.generate(
+        9,
+        (index) => List.generate(
+            9,
+            (j) => int.tryParse(_sudokuString
+                .substring(index * 9, (index + 1) * 9)
+                .split('')[j])));
+    int i = 0;
+    while (i < 81 - gizlenecekSayisi) {
+      int x=Random().nextInt(9);
+      int y=Random().nextInt(9);
+     if( _sudoku[x][y] != 0){
+       _sudoku[x][y] = 0;
+      i++;
+      }
+    }
+    
+
+    print(_sudokuString);
+    print(gizlenecekSayisi);
+  }
+
+  @override
+  void initState() {
+    _sudokuOlustur();
+    super.initState();
   }
 
   @override
@@ -66,7 +97,10 @@ class _SudokuSayfasiState extends State<SudokuSayfasi> {
                                             color: Colors.amber,
                                             alignment: Alignment.center,
                                             child: Text(
-                                                ornekSudoku[x][y].toString()),
+                                              _sudoku[x][y] > 0
+                                                  ? _sudoku[x][y].toString()
+                                                  : "",
+                                            ),
                                           ),
                                         ),
                                         if (y == 2 || y == 5) SizedBox(width: 5)
