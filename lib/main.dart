@@ -20,7 +20,7 @@ class Home extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: kutu.get('karanlik_tema', defaultValue: false)
                 ? ThemeData.dark()
-                : ThemeData.light(),
+                : ThemeData.light( ),
             home: GirisSayfasi(),
           );
         },
