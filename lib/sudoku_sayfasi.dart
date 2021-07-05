@@ -5,14 +5,6 @@ import 'package:hive/hive.dart';
 import 'package:sudoku/dil.dart';
 import 'package:sudoku/sudokuskor.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-class SudokuSayfasi extends StatefulWidget {
-  const SudokuSayfasi({Key? key}) : super(key: key);
-
-  @override
-  _SudokuSayfasiState createState() => _SudokuSayfasiState();
-}
-
 final Map sudokuSeviyeleri = {
   dil["seviye1"]: 62,
   dil["seviye2"]: 53,
@@ -21,12 +13,23 @@ final Map sudokuSeviyeleri = {
   dil["seviye5"]: 26,
   dil["seviye6"]: 17
 };
+class SudokuSayfasi extends StatefulWidget {
+  const SudokuSayfasi({Key? key}) : super(key: key);
+
+  @override
+  _SudokuSayfasiState createState() => _SudokuSayfasiState();
+}
+
+
 
 class _SudokuSayfasiState extends State<SudokuSayfasi> {
   final List ornekSudoku =
       List.generate(9, (i) => List.generate(9, (j) => j + 1));
   final Box _sudokuKutu = Hive.box('sudoku');
   List _sudoku = [];
+
+bool _note=false;
+
   late String _sudokuString;
   void _sudokuOlustur() {
     int gizlenecekSayisi = sudokuSeviyeleri[
@@ -204,7 +207,8 @@ class _SudokuSayfasiState extends State<SudokuSayfasi> {
                                 child: InkWell(
                                   onTap: () {
                                     String xy = _sudokuKutu.get('xy');
-                                    if (xy != "99"&& _sudokuKutu.get('ipucu')>0) {
+                                    if (xy != "99" &&
+                                        _sudokuKutu.get('ipucu') > 0) {
                                       int xC = int.parse(xy.substring(0, 1)),
                                           yC = int.parse(xy.substring(1));
 
@@ -261,25 +265,53 @@ class _SudokuSayfasiState extends State<SudokuSayfasi> {
                             children: [
                               Expanded(
                                 child: InkWell(
-                                  onTap: () {},
+                                  onTap: () =>setState(()=>_note=!_note),
                                   child: Card(
-                                    color: Colors.blue,
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [Icon(Icons.delete)],
+                                      children: [
+                                        Icon(
+                                          Icons.note_add_outlined,
+                                          color:_note? Colors.amber.withOpacity(0.6): Colors.amber,
+                                        ),
+                                        Text(
+                                          "Not",
+                                          style: TextStyle(color: Colors.amber),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    String xy = _sudokuKutu.get('xy'); 
+                                    int xC = int.parse(xy.substring(0, 1)),
+                                          yC = int.parse(xy.substring(1));
+                                    if (xy != "99"&&!_note) {
+                                     
+                                      _sudoku[xC][yC] = "0";
+                                      _sudokuKutu.put('sudokuRows', _sudoku);
+                                    }else if (_note) {
+                                      
+                                    }
+                                  },
                                   child: Card(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [Icon(Icons.delete)],
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                          color: Colors.amber,
+                                        ),
+                                        Text(
+                                          "Sil",
+                                          style: TextStyle(color: Colors.amber),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ),
